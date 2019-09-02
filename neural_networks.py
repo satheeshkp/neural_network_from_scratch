@@ -1,72 +1,47 @@
 import numpy as np
+feature_set = np.array([[0,1,0],[0,0,1],[1,0,0],[1,1,0],[1,1,1]])
+labels = np.array([[1,0,0,1,1]])
+labels = labels.reshape(5,1)
+
+np.random.seed(42)
+weights = np.random.rand(3,1)
+bias = np.random.rand(1)
+lr = 0.05
+
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
+def sigmoid_der(x):
+    return sigmoid(x)*(1-sigmoid(x))
+
+for epoch in range(20000):
+    print("epoch :",epoch)
+    inputs = feature_set
+
+    # feedforward step1
+    XW = np.dot(feature_set, weights) + bias
+
+    #feedforward step2
+    z = sigmoid(XW)
 
 
-class NeuralNetwork():
+    # backpropagation step 1
+    error = z - labels
 
-    def __init__(self):
-        # seeding for random number generation
-        np.random.seed(1)
+    print(error.sum())
 
-        # converting weights to a 3 by 1 matrix with values from -1 to 1 and mean of 0
-        self.synaptic_weights = 2 * np.random.random((3, 1)) - 1
+    # backpropagation step 2
+    dcost_dpred = error
+    dpred_dz = sigmoid_der(z)
 
-    def sigmoid(self, x):
-        # applying the sigmoid function
-        return 1 / (1 + np.exp(-x))
+    z_delta = dcost_dpred * dpred_dz
 
-    def sigmoid_derivative(self, x):
-        # computing derivative to the Sigmoid function
-        return x * (1 - x)
+    inputs = feature_set.T
+    weights -= lr * np.dot(inputs, z_delta)
 
-    def train(self, training_inputs, training_outputs, training_iterations):
-        # training the model to make accurate predictions while adjusting weights continually
-        for iteration in range(training_iterations):
-            # siphon the training data via  the neuron
-            output = self.think(training_inputs)
+    for num in z_delta:
+        bias -= lr * num
 
-            # computing error rate for back-propagation
-            error = training_outputs - output
-
-            # performing weight adjustments
-            adjustments = np.dot(training_inputs.T, error * self.sigmoid_derivative(output))
-
-            self.synaptic_weights += adjustments
-
-    def think(self, inputs):
-        # passing the inputs via the neuron to get output
-        # converting values to floats
-
-        inputs = inputs.astype(float)
-        output = self.sigmoid(np.dot(inputs, self.synaptic_weights))
-        return output
-
-
-if __name__ == "__main__":
-    # initializing the neuron class
-    neural_network = NeuralNetwork()
-
-    print("Beginning Randomly Generated Weights: ")
-    print(neural_network.synaptic_weights)
-
-    # training data consisting of 4 examples--3 input values and 1 output
-    training_inputs = np.array([[0, 0, 1],
-                                [1, 1, 1],
-                                [1, 0, 1],
-                                [0, 1, 1]])
-
-    training_outputs = np.array([[0, 1, 1, 0]]).T
-
-    # training taking place
-    neural_network.train(training_inputs, training_outputs, 15000)
-
-    print("Ending Weights After Training: ")
-    print(neural_network.synaptic_weights)
-
-    user_input_one = str(input("User Input One: "))
-    user_input_two = str(input("User Input Two: "))
-    user_input_three = str(input("User Input Three: "))
-
-    print("Considering New Situation: ", user_input_one, user_input_two, user_input_three)
-    print("New Output data: ")
-    print(neural_network.think(np.array([user_input_one, user_input_two, user_input_three])))
-    print("Wow, we did it!")
+single_point = np.array([0,1,0])
+result = sigmoid(np.dot(single_point, weights) + bias)
+print(result)
