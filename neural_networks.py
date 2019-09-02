@@ -8,9 +8,11 @@ weights = np.random.rand(3,1)
 bias = np.random.rand(1)
 lr = 0.05
 
+#activation function
 def sigmoid(x):
     return 1/(1+np.exp(-x))
 
+#derivative of activation function out
 def sigmoid_der(x):
     return sigmoid(x)*(1-sigmoid(x))
 
@@ -42,6 +44,7 @@ for epoch in range(20000):
     for num in z_delta:
         bias -= lr * num
 
+#test network
 single_point = np.array([0,1,0])
 result = sigmoid(np.dot(single_point, weights) + bias)
-print(result)
+print("output",result)
